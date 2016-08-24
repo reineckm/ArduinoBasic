@@ -1,6 +1,6 @@
 # ArduinoBasic
 
-This is code for an oldshool Basic Homecomputer disigned to fits into a old PS/2 Keyboard. The computer puts out a 29 by 9 characters Black and White AV signal thanks to the incredible [TVOut Libary|https://github.com/Avamander/arduino-tvout]. Hardwarewise you only need some kind of preffebly small Arduino like a Arduino Pro, 3 Resistors, 2 RCA Jacks and a PS/2 Keyboard.
+This is code for an oldshool Basic Homecomputer designed to fit into a old PS/2 Keyboard. The computer puts out a 29 by 9 characters Black and White AV signal thanks to the incredible [TVOut Libary|https://github.com/Avamander/arduino-tvout]. Hardwarewise you only need some kind of preffebly small Arduino like a Arduino Pro, 3 Resistors, 2 RCA Jacks and a PS/2 Keyboard.
 
 # Basic
 
