@@ -1,0 +1,61 @@
+# depslib dependency file v1.0
+1468707060 source:c:\users\reineckm\c\basic\main.cpp
+	<iostream>
+	<Tokenizer.h>
+
+1468664964 source:c:\users\reineckm\c\basic\src\token.cpp
+	"Token.h"
+
+1468669696 c:\users\reineckm\c\basic\include\token.h
+
+1468669273 c:\users\reineckm\c\basic\include\tokenizer.h
+	<Token.h>
+
+1468671745 source:c:\users\reineckm\c\basic\src\tokenizer.cpp
+	"Tokenizer.h"
+	<iostream>
+	<string.h>
+	<stdlib.h>
+
+1468664964 source:c:\users\reineckm\documents\arduino\libraries\basic\src\token.cpp
+	"Token.h"
+
+1468708307 c:\users\reineckm\documents\arduino\libraries\basic\include\token.h
+
+1471805721 source:c:\users\reineckm\documents\arduino\libraries\basic\interpret.cpp
+	"Interpret.h"
+	<string.h>
+	<stdlib.h>
+	<stdio.h>
+	<iostream>
+	"Arduino.h"
+
+1471693567 c:\users\reineckm\documents\arduino\libraries\basic\interpret.h
+	"Token.h"
+	"Tokenizer.h"
+	"stdint.h"
+
+1471801749 c:\users\reineckm\documents\arduino\libraries\basic\token.h
+	"stdint.h"
+
+1471806923 source:c:\users\reineckm\documents\arduino\libraries\basic\main.cpp
+	"Tokenizer.h"
+	"Interpret.h"
+	<string.h>
+	<stdio.h>
+	<iostream>
+
+1471500114 c:\users\reineckm\documents\arduino\libraries\basic\tokenizer.h
+	"Token.h"
+	"stdint.h"
+
+1471537880 source:c:\users\reineckm\documents\arduino\libraries\basic\token.cpp
+	"Token.h"
+
+1471807248 source:c:\users\reineckm\documents\arduino\libraries\basic\tokenizer.cpp
+	"Tokenizer.h"
+	"Interpret.h"
+	<string.h>
+	<stdlib.h>
+	<iostream>
+
