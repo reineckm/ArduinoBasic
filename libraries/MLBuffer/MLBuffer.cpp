@@ -1,3 +1,11 @@
+/* Multi Line Buffer
+ * Datastructure which is a Long String with /n as lineseperator
+ * and functions to easily access/ manipulate lines.
+ *
+ * @author reineckm
+ * @license Apache-2.0
+ */
+
 #include "MLBuffer.h"
 #include <stdio.h>
 #include <string.h>

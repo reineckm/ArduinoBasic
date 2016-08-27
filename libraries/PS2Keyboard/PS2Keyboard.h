@@ -4,7 +4,7 @@
   Written by Christian Weichel <info@32leaves.net>
 
   ** Mostly rewritten Paul Stoffregen <paul@pjrc.com>, June 2010
-  ** Modified for use with Arduino 13 by L. Abraham Smith, <n3bah@microcompdesign.com> * 
+  ** Modified for use with Arduino 13 by L. Abraham Smith, <n3bah@microcompdesign.com> *
   ** Modified for easy interrup pin assignement on method begin(datapin,irq_pin). Cuningan <cuninganreset@gmail.com> **
 
   This library is free software; you can redistribute it and/or
@@ -33,6 +33,7 @@
 #endif
 
 #include "utility/int_pins.h"
+#include <TVout.h>
 
 // Every call to read() returns a single byte for each
 // keystroke.  These configure what byte will be returned
@@ -188,19 +189,19 @@ class PS2Keyboard {
   	 * method before using any other method of this class.
   	 */
     PS2Keyboard();
-    
+
     /**
      * Starts the keyboard "service" by registering the external interrupt.
      * setting the pin modes correctly and driving those needed to high.
      * The propably best place to call this method is in the setup routine.
      */
     static void begin(uint8_t dataPin, uint8_t irq_pin, const PS2Keymap_t &map = PS2Keymap_US);
-    
+
     /**
      * Returns true if there is a char to be read, false if not.
      */
     static bool available();
-    
+
     /**
      * Returns the char last read from the keyboard.
      * If there is no char available, -1 is returned.

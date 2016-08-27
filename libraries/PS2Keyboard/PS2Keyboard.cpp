@@ -4,7 +4,7 @@
   Written by Christian Weichel <info@32leaves.net>
 
   ** Mostly rewritten Paul Stoffregen <paul@pjrc.com> 2010, 2011
-  ** Modified for use beginning with Arduino 13 by L. Abraham Smith, <n3bah@microcompdesign.com> * 
+  ** Modified for use beginning with Arduino 13 by L. Abraham Smith, <n3bah@microcompdesign.com> *
   ** Modified for easy interrup pin assignement on method begin(datapin,irq_pin). Cuningan <cuninganreset@gmail.com> **
 
   for more information you can read the original wiki in arduino.cc
@@ -58,6 +58,24 @@ static uint8_t CharBuffer=0;
 static uint8_t UTF8next=0;
 static const PS2Keymap_t *keymap=NULL;
 
+#define portOfPin(P)\
+  (((P)>=0&&(P)<8)?&PORTD:(((P)>7&&(P)<14)?&PORTB:&PORTC))
+#define ddrOfPin(P)\
+  (((P)>=0&&(P)<8)?&DDRD:(((P)>7&&(P)<14)?&DDRB:&DDRC))
+#define pinOfPin(P)\
+  (((P)>=0&&(P)<8)?&PIND:(((P)>7&&(P)<14)?&PINB:&PINC))
+#define pinIndex(P)((uint8_t)(P>13?P-14:P&7))
+#define pinMask(P)((uint8_t)(1<<pinIndex(P)))
+
+#define pinAsInput(P) *(ddrOfPin(P))&=~pinMask(P)
+#define pinAsInputPullUp(P) *(ddrOfPin(P))&=~pinMask(P);digitalHigh(P)
+#define pinAsOutput(P) *(ddrOfPin(P))|=pinMask(P)
+#define digitalLow(P) *(portOfPin(P))&=~pinMask(P)
+#define digitalHigh(P) *(portOfPin(P))|=pinMask(P)
+#define isHigh(P)((*(pinOfPin(P))& pinMask(P))>0)
+#define isLow(P)((*(pinOfPin(P))& pinMask(P))==0)
+#define digitalState(P)((uint8_t)isHigh(P))
+
 // The ISR for the external interrupt
 void ps2interrupt(void)
 {
@@ -66,11 +84,10 @@ void ps2interrupt(void)
 	static uint32_t prev_ms=0;
 	uint32_t now_ms;
 	uint8_t n, val;
-
-	val = digitalRead(DataPin);
+	val = digitalState(DataPin);
 	now_ms = millis();
 	if (now_ms - prev_ms > 250) {
-		bitcount = 0;
+        bitcount = 0;
 		incoming = 0;
 	}
 	prev_ms = now_ms;
@@ -392,7 +409,6 @@ PS2Keyboard::PS2Keyboard() {
 
 void PS2Keyboard::begin(uint8_t data_pin, uint8_t irq_pin, const PS2Keymap_t &map) {
   uint8_t irq_num=255;
-
   DataPin = data_pin;
   keymap = &map;
 
