@@ -81,6 +81,9 @@ int main()
                "20 PRINT A\n"
                "30 NEXT A\n";
     char* e9 = "20";
+    char* t10 = "10 LET A 10 % 3\n"
+                "20 PRINT A\n";
+    char* e10 = "1";
     Tokenizer* tok = new Tokenizer(10);
     Interpret* inter = new Interpret(tok);
     std::cout << test(inter, t1, e1) << std::endl;
@@ -92,6 +95,7 @@ int main()
     std::cout << test(inter, t7, e7) << std::endl;
     std::cout << test(inter, t8, e8) << std::endl;
     std::cout << test(inter, t9, e9) << std::endl;
+    std::cout << test(inter, t10, e10) << std::endl;
     std::cout << test(inter, "20 PRINT 0 \"..   . . \"\n", "0..   . . ") << std::endl;
     return 0;
 }

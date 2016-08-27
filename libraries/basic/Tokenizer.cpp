@@ -49,7 +49,7 @@ bool isSingleChar(char* buffer)
 
 bool isOperator(char* buffer)
 {
-    return buffer[0] == '+' || buffer[0] == '-' || buffer[0] == '*' || buffer[0] == '/';
+    return buffer[0] == '+' || buffer[0] == '-' || buffer[0] == '*' || buffer[0] == '/' || buffer[0] == '%';
 }
 
 bool isRelop(char* buffer)

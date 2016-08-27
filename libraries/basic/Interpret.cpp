@@ -84,7 +84,7 @@ void Interpret::doTerm()
         rhs = this->next(op);
         if ((tokenBuf[lhs].type == NUMBER || tokenBuf[lhs].type == VARIABLE) &&
                 (tokenBuf[op].type == OPERATOR) &&
-                (tokenBuf[op].value == '*' || tokenBuf[op].value == '/') &&
+                (tokenBuf[op].value == '*' || tokenBuf[op].value == '/' || tokenBuf[op].value == '%') &&
                 (tokenBuf[rhs].type == NUMBER || tokenBuf[rhs].type == VARIABLE))
         {
             varToNum(lhs);
@@ -93,6 +93,8 @@ void Interpret::doTerm()
                 tokenBuf[lhs].value = tokenBuf[lhs].value * tokenBuf[rhs].value;
             else if (tokenBuf[op].value == '/')
                 tokenBuf[lhs].value = tokenBuf[lhs].value / tokenBuf[rhs].value;
+            else if (tokenBuf[op].value == '%')
+                tokenBuf[lhs].value = tokenBuf[lhs].value % tokenBuf[rhs].value;
             tokenBuf[lhs].type = NUMBER;
             tokenBuf[op].type = EMPTY;
             tokenBuf[rhs].type = EMPTY;
