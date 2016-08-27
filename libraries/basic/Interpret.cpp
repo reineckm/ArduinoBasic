@@ -16,6 +16,7 @@ Interpret::Interpret(Tokenizer *tokenizer)
         forLineVars[i] = 0;
         forRunning[i] = false;
     }
+    sprintf(this->msg, "Vars: %d StrLen: %d", NUM_VARS, STRNG_LEN);
 }
 
 void Interpret::load(char* programm)
@@ -181,7 +182,7 @@ bool Interpret::cmdPrint(char bufferStart)
         char whatElse = this->next(whatToPrint);
         if ((tokenBuf[whatElse].type == NUMBER || tokenBuf[whatElse].type == VARIABLE)) {
           varToNum(whatElse);
-          sprintf(this->msg, "%d%d\n", tokenBuf[whatToPrint].value, tokenBuf[whatElse].value); // Falls String definiert ist, diesen mit ausgeben
+          sprintf(this->msg, "%d %d\n", tokenBuf[whatToPrint].value, tokenBuf[whatElse].value); // Falls String definiert ist, diesen mit ausgeben
         } else if (tokenBuf[whatElse].type == STRING) {
           sprintf(this->msg, "%d%s\n", tokenBuf[whatToPrint].value, tokenizer->stringparam); // Falls String definiert ist, diesen mit ausgeben
         } else {

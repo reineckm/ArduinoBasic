@@ -77,12 +77,6 @@ void doCmd() {
       b = atoi(subbuff);
       TV.set_cursor(a, b);
       break;
-    case '5':
-      byteBuff = TV.get_cursor_x();
-      break;
-    case '6':
-      byteBuff = TV.get_cursor_y();
-      break;
     case '9':
       TV.delay_frame(3);
       break;

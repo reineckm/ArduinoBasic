@@ -1,19 +1,27 @@
+/* Basic for Arduino
+ * 
+ * @author reineckm
+ * @license Apache-2.0
+ */
+
 #define __AVR_ATmega328P__ 1
 
 #include <EEPROM.h>
-#include <TVout.h>
 #include <PS2Keyboard.h>
+#include <Wire.h>
+
 #include <MLBuffer.h>
 #include <fontALL.h>
 #include <Tokenizer.h>
 #include <Interpret.h>
+#include <GraphicChipInterface.h>
 
 #define SBW 29
 #define SBH 9
-#define BUFSIZE 400
 #define FONT font4x6
 #define FONTW 4
 #define FONTH 6
+#define BUFSIZE 999
 
 char lineBuf[SBW];
 byte cX, cY, startLine;
@@ -22,25 +30,48 @@ byte cX, cY, startLine;
 MLBuffer mlb = MLBuffer(BUFSIZE, SBW + 1);
 Tokenizer* tok = new Tokenizer(10);
 Interpret interpret = Interpret(tok);
-TVout TV;
-PS2Keyboard keyboard;
+PS2Keyboard Keyboard;
 
-void demo() {
-  clearAll();
-  readAll();
-  updateLineBuf();
-  runBas();
+GraphicChipInterface GC;
+
+void requestEvent() {
+  digitalWrite(13, HIGH);
+  Wire.write(GC.buff);
+  GC.buff[0] = '9';
+  digitalWrite(13, LOW);
 }
 
 void setup()  {
-  //keyboard.begin(2, 5, PS2Keymap_German);
-  Serial.begin(9600);
-  TV.begin(NTSC, SBW * FONTW + FONTW, SBH * FONTH + FONTH);
-  TV.select_font(FONT);
+  Wire.begin(8);
+  Wire.onRequest(requestEvent);
+  Keyboard.begin(3, 2, PS2Keymap_German);
+  GC.buff[0] = '9';
   clearAll();
-  updateLineBuf();
-  //demo();
-  printSB(0,SBH);
+  GC.print("Awesome Basic Ready!");
+}
+
+void loop() {
+  if (Keyboard.available()) {
+    remCursor();
+    char c = Keyboard.read();
+    switch (c) {
+      case PS2_LEFTARROW: curLeft(); break;
+      case PS2_DOWNARROW: curDown(); break;
+      case PS2_UPARROW: curUp(); break;
+      case PS2_RIGHTARROW: curRight(); break;
+      case PS2_ENTER: onEnter(); break;
+      case PS2_BACKSPACE: onBackspace(); break;
+      default:
+        if (c == ' ')
+          c = '_';
+        if (cX < SBW) {
+          insertCharInLineBuf(cX, c);
+        }
+        curRight();
+        printSB(cY, cY);
+    }
+    drawCursor();
+  }
 }
 
 void onEnter() {
@@ -63,11 +94,13 @@ void onBackspace() {
   if (cX == 0) {
     if (isLineBufEmpty()) {
       mlb.del(startLine + cY);
-    } 
+    }
     if (cY > 0) {
       cY--;
     } else if (startLine > 0) {
       startLine--;
+    } else {
+      return; // Oben Links angekommen
     }
     cX = updateLineBuf();
     printSB(0, SBH);
@@ -93,7 +126,7 @@ void curUp() {
   if (fullRefresh) {
     printSB(0, SBH);
   } else {
-    printSB(cY, cY + 1);  
+    printSB(cY, cY + 1);
   }
 }
 
@@ -112,7 +145,7 @@ void curDown() {
   if (fullRefresh) {
     printSB(0, SBH);
   } else {
-    printSB(cY - 1, cY);  
+    printSB(cY - 1, cY);
   }
 }
 
@@ -142,7 +175,7 @@ void curRight() {
     if (fullRefresh) {
       printSB(0, SBH);
     } else {
-      printSB(cY - 1, cY);  
+      printSB(cY - 1, cY);
     }
   }
 }
@@ -150,16 +183,14 @@ void curRight() {
 int getInt() {
   int inX = 0;
   char inBuf[5] = {0, 0, 0, 0, 0};
-  //TV.clear_screen();
-  //TV.set_cursor(0, 0);
-  TV.print(interpret.output());
-  int x = TV.get_cursor_x();
-  int y = TV.get_cursor_y();
+  GC.clear();
+  GC.set_cursor(0, 0);
+  GC.print(interpret.output());
   while (true) {
-    if (Serial.available()) {
-      char c = Serial.read();
+    if (Keyboard.available()) {
+      char c = Keyboard.read();
       if (c == '\r') {
-        TV.println();
+        GC.println();
         return atoi(inBuf);
       } else if (c == 127 && cX > 0) {
         inX--;
@@ -168,45 +199,10 @@ int getInt() {
         inBuf[inX] = c;
         inX++;
       }
-      TV.set_cursor(x, y);
-      TV.print(inBuf);
+      GC.set_cursor(0, 1);
+      GC.print(inBuf);
     }
   }
-}
-
-int escStage = 0;
-void loop() {
-  if (Serial.available()) {
-    remCursor();
-    char c = Serial.read();
-    if (c == 27) {
-      escStage = 1;
-    } else if (c == '[' && escStage == 1) {
-      escStage = 2;
-    } else if (escStage == 2) {
-      switch (c) {
-        case 'D': curLeft(); break;
-        case 'B': curDown(); break;
-        case 'A': curUp(); break;
-        case 'C': curRight(); break;
-      }
-      escStage = 0;
-    } else if (c == 127) {
-      onBackspace();
-    } else if (c == '\r') {
-      onEnter();
-    } else {
-      if (c == ' ')
-        c = '_';
-      if (cX < SBW) {
-        insertCharInLineBuf(cX, toUpper(c));
-      }
-      curRight();
-      printSB(cY, cY);  
-    
-    }
-    drawCursor();
-  }  
 }
 
 boolean commands() {
@@ -217,6 +213,9 @@ boolean commands() {
   } else if (strncmp(lineBuf, "!L", 2) == 0) {
     clearAll();
     readAll();
+    cX = 0;
+    cY = 0;
+    startLine = 0;
     updateLineBuf();
     printSB(0, SBH);
   } else if  (strncmp(lineBuf, "!C", 2) == 0) {
@@ -232,19 +231,19 @@ boolean commands() {
 
 void runBas() {
   interpret.load(mlb.text);
-  TV.clear_screen();
-  TV.set_cursor(0, 0);
+  GC.clear();
+  GC.set_cursor(0, 0);
   while (interpret.run()) {
     if (interpret.requestUserInput) {
       interpret.input(getInt());
     }
     else if (interpret.outputAvaiable) {
-      TV.print(interpret.output());
+      GC.print(interpret.output());
     }
   }
-  while (!Serial.available());
-  Serial.read();
-  TV.println(interpret.output());
+  while (!Keyboard.available());
+    Keyboard.read();
+  GC.println(interpret.output());
   printSB(0, SBH);
 }
 
@@ -303,53 +302,51 @@ int updateLineBuf() {
     lineBuf[i] = aktLine[i];
   }
 }
-/*
-void updateSB() {
-  TV.set_cursor(0, cY * FONTH);
-  for (int x = 0; x < SBW; x++) {
-    TV.print(lineBuf[x]);
-  }
-}
-*/
+
 void drawCursor() {
-    TV.draw_row(cY * FONTH + FONTW + 1, cX * FONTW, cX * FONTW + FONTW, 1);
+  GC.draw_row(cY * FONTH + FONTW + 1, cX * FONTW, cX * FONTW + FONTW, 1);
 }
 
 void remCursor() {
-    TV.draw_row(cY * FONTH + FONTW + 1, 0, 120, 0);
+  GC.draw_row(cY * FONTH + FONTW + 1, 0, 120, 0);
 }
 
 void printSB(int from, int to) {
-  TV.set_cursor(0, from * FONTH);
+  char b[SBW];
   for (int y = from; y <= to; y++) {
-    char* akt;
-    if (y == cY) {
-      akt = lineBuf;
-    } else {
-      akt = mlb.getFrom(startLine + y);
-    }
-    bool fillBlank = false;
     for (int x = 0; x < SBW; x++) {
-      if (akt[x] == '\0' || akt[x] == '\n')
-        fillBlank = true;
-      if (fillBlank) {
-        TV.print(' ');
-      } else {
-        if (akt[x] == '_') 
-          akt[x] = ' ';
-        TV.print(akt[x]);
+      b[x] = ' ';
+    }
+    if (y == cY) {
+      for (int x = 0; x < SBW; x++) {
+        if (lineBuf[x] == '\0' || lineBuf[x] == '\n' || lineBuf[x] == '_') {
+          b[x] = ' ';
+        } else {
+          b[x] = lineBuf[x];
+        }
+      }
+    } else {
+      char* akt = mlb.getFrom(startLine + y);
+      for (int x = 0; x < SBW; x++) {
+        if (akt[x] == '\0' || akt[x] == '\n') {
+          b[x] = ' ';
+          break;
+        } else {
+          b[x] = akt[x];
+        }
       }
     }
-    if (y < (SBH - 2)) TV.println("");
+    GC.set_cursor(0, y * FONTH);
+    GC.print(b);
   }
-  TV.set_cursor(0, SBH * FONTH);
+  GC.set_cursor(0, SBH * FONTH);
   char statusLine[SBW];
   sprintf(statusLine, "%-20s|R%3dC%3d", interpret.output(), freeRam(), mlb.bytesLeft());
   for (int i = 0; i < SBW; i++) {
     if (statusLine[i] == '\n')
       statusLine[i] = ' ';
   }
-  TV.print(statusLine);
+  GC.print(statusLine);
 }
 
 int freeRam () {

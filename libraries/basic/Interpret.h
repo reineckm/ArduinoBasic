@@ -3,7 +3,7 @@
 #include "Token.h"
 #include "Tokenizer.h"
 #include "stdint.h"
-#define NUM_VARS 10
+#define NUM_VARS 26
 
 class Interpret
 {

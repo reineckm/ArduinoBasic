@@ -1,3 +1,10 @@
+/* Tests for the Basic Interpreter to be run
+ * on a development Platform.
+ *
+ * @author reineckm
+ * @license Apache-2.0
+ */
+
 #include "Tokenizer.h"
 #include "Interpret.h"
 #if not defined(__AVR_ATmega328P__)
@@ -35,12 +42,12 @@ int main()
     char* t2 = "5 LET B 2\n"
                "10 LET A 2\n"
                "20 LET A A * 2\n"
-               "30 PRINT A\n"
+               "30 PRINT A B\n"
                "40 IF A < 65 GOTO 20\n"
                "50 LET A 3\n"
                "60 LET B B + 1\n"
                "70 IF B < 9 GOTO 20\n";
-    char* e2 = "96";
+    char* e2 = "96 8";
     char* t3 = "10 ASK A \"A 14:\"\n"
                "20 ASK B\n"
                "30 IF A = 0 PRINT \"GGT \" B END\n"
@@ -62,8 +69,9 @@ int main()
     char* t6 = "10 RND F 2 4\n"
                "20 PRINT F \" <- RND\"\n";
     char* e6 = "3 <- RND";
-    char* t7 = "20 PRINT A A\n";
-    char* e7 = "0 0";
+    char* t7 = "10 LET A 2\n"
+               "20 PRINT A A\n";
+    char* e7 = "2 2";
     char* t8 = "10 LET F -2\n"
                "20 LET F F * F\n"
                "30 PRINT \"F: \" F\n"

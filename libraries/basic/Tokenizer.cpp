@@ -1,3 +1,9 @@
+/* Tokenizer
+ *
+ * @author reineckm
+ * @license Apache-2.0
+ */
+
 #include "Tokenizer.h"
 #include "Interpret.h"
 #include <string.h>
@@ -15,6 +21,12 @@ Tokenizer::Tokenizer(char buffer)
 void Tokenizer::load(char* input)
 {
     this->input = input;
+}
+
+char toupper(char in) {
+  if (in >= 97 && in <= 122)
+    return in - 32;
+  return in;
 }
 
 bool isInteger(char* input)
@@ -184,56 +196,56 @@ char Tokenizer::tokenize(char line, bool haltOnLineNumber)
             stringparam[strlen(buffer) - 2] = 0;
             this->tokens[i].type = STRING;
             this->tokens[i++].value = 0;
-        }
-        else if (buffer[0] == 'P')
+        } // TODO: Switch Statement
+        else if (toupper(buffer[0]) == 'P')
         {
             this->tokens[i].type = KEYWORD;
-            if (buffer[1] == 'R')
+            if (toupper(buffer[1]) == 'R')
               this->tokens[i++].value = PRINT;
-            if (buffer[1] == 'L')
+            if (toupper(buffer[1]) == 'L')
               this->tokens[i++].value = PLINE;
         }
-        else if (buffer[0] == 'L')
+        else if (toupper(buffer[0]) == 'L')
         {
             this->tokens[i].type = KEYWORD;
             this->tokens[i++].value = LET;
         }
-        else if (buffer[0] == 'G')
+        else if (toupper(buffer[0]) == 'G')
         {
             this->tokens[i].type = KEYWORD;
             this->tokens[i++].value = GOTO;
         }
-        else if (buffer[0] == 'I')
+        else if (toupper(buffer[0]) == 'I')
         {
             this->tokens[i].type = KEYWORD;
             this->tokens[i++].value = IF;
         }
-        else if (buffer[0] == 'E')
+        else if (toupper(buffer[0]) == 'E')
         {
             this->tokens[i].type = KEYWORD;
             this->tokens[i++].value = END;
         }
-        else if (buffer[0] == 'A')
+        else if (toupper(buffer[0]) == 'A')
         {
             this->tokens[i].type = KEYWORD;
             this->tokens[i++].value = ASK;
         }
-        else if (buffer[0] == 'R')
+        else if (toupper(buffer[0]) == 'R')
         {
             this->tokens[i].type = KEYWORD;
             this->tokens[i++].value = RND;
         }
-        else if (buffer[0] == 'F')
+        else if (toupper(buffer[0]) == 'F')
         {
             this->tokens[i].type = KEYWORD;
             this->tokens[i++].value = FOR;
         }
-        else if (buffer[0] == 'N')
+        else if (toupper(buffer[0]) == 'N')
         {
             this->tokens[i].type = KEYWORD;
             this->tokens[i++].value = NEXT;
         }
-        else if (buffer[0] == 'T')
+        else if (toupper(buffer[0]) == 'T')
         {
             this->tokens[i].type = KEYWORD;
             this->tokens[i++].value = TO;

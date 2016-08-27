@@ -1,3 +1,9 @@
+/* Basic data structur
+ *
+ * @author reineckm
+ * @license Apache-2.0
+ */
+
 #ifndef TOKEN_H
 #define TOKEN_H
 #include "stdint.h"
